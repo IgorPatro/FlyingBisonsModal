@@ -8,6 +8,8 @@ declare module "styled-components" {
       text: string
       green: string
       blue: string
+      darkBlue: string
+      gray: string
     }
     weights: {
       regular: number

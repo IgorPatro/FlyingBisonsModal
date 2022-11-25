@@ -5,6 +5,8 @@ const theme = {
     text: "#0E171B",
     green: "#2BB574",
     blue: "#0878A1",
+    darkBlue: "#134359",
+    gray: "#d9d9d9",
   },
   weights: {
     regular: 400,
