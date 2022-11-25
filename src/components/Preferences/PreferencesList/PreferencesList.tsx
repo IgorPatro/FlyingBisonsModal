@@ -1,10 +1,7 @@
 import React from "react"
 import Checkbox from "../../common/Checkbox/Checkbox"
-
-export interface CheckboxSchema {
-  isChecked: boolean
-  children?: Record<string, CheckboxSchema>
-}
+import { type CheckboxSchema } from "../Preferences.data"
+import * as S from "./PreferencesList.styled"
 
 interface Props {
   preferences: Record<string, CheckboxSchema>
@@ -22,33 +19,38 @@ const PreferencesList = ({
   updateSubChild,
 }: Props) => {
   return (
-    <div>
+    <S.PreferencesList>
       {Object.entries(preferences).map(([name, child]) => {
         return (
-          <div key={name}>
+          <S.PreferencesListItem key={name}>
             <Checkbox
               label={name}
               isChecked={preferences[name].isChecked}
               onChange={() => updateChild(name)}
             />
-            {child.children &&
-              Object.entries(child.children).map(([subChildName, subChild]) => (
-                <div style={{ paddingLeft: "20px" }} key={subChildName}>
-                  <Checkbox
-                    label={subChildName}
-                    isChecked={subChild.isChecked}
-                    onChange={() =>
-                      updateSubChild(name, subChildName, {
-                        isChecked: !subChild.isChecked,
-                      })
-                    }
-                  />
-                </div>
-              ))}
-          </div>
+            {child.children && (
+              <S.PreferencesList>
+                {Object.entries(child.children).map(
+                  ([subChildName, subChild]) => (
+                    <S.PreferencesListItem key={subChildName}>
+                      <Checkbox
+                        label={subChildName}
+                        isChecked={subChild.isChecked}
+                        onChange={() =>
+                          updateSubChild(name, subChildName, {
+                            isChecked: !subChild.isChecked,
+                          })
+                        }
+                      />
+                    </S.PreferencesListItem>
+                  )
+                )}
+              </S.PreferencesList>
+            )}
+          </S.PreferencesListItem>
         )
       })}
-    </div>
+    </S.PreferencesList>
   )
 }
 

@@ -1,41 +1,28 @@
 import * as React from "react"
 import Modal from "../common/Modal/Modal"
 import Button from "../common/Button/Button"
-import Checkbox from "../common/Checkbox/Checkbox"
-import PreferencesList, {
-  CheckboxSchema,
-} from "./PreferencesList/PreferencesList"
+import PreferencesList from "./PreferencesList/PreferencesList"
 import * as S from "./Preferences.styled"
-
-const preferencesTreeV2: Record<string, CheckboxSchema> = {
-  attention: {
-    isChecked: false,
-  },
-  satisfation: {
-    isChecked: false,
-  },
-  salary: {
-    isChecked: false,
-    children: {
-      b2b: {
-        isChecked: false,
-      },
-      b2c: {
-        isChecked: true,
-      },
-    },
-  },
-  location: {
-    isChecked: false,
-  },
-}
+import {
+  employeesTree,
+  companyTree,
+  performanceTree,
+  workspacesTree,
+  type CheckboxSchema,
+} from "./Preferences.data"
 
 const Preferences = () => {
-  const [isChecked, setIsChecked] = React.useState(false)
-  const [preferences, setPreferences] = React.useState(preferencesTreeV2)
+  const [employeesPreferences, setEmployeesPreferences] =
+    React.useState(employeesTree)
+  const [companyPreferences, setCompanyPreferences] =
+    React.useState(companyTree)
+  const [performancePreferences, setPerformancePreferences] =
+    React.useState(performanceTree)
+  const [workspacesPreferences, setWorkspacesPreferences] =
+    React.useState(workspacesTree)
 
   const updateChild = (name: string) =>
-    setPreferences((prevState) => ({
+    setEmployeesPreferences((prevState) => ({
       ...prevState,
       [name]: {
         ...prevState[name],
@@ -48,7 +35,7 @@ const Preferences = () => {
     subChildName: string,
     subChild: CheckboxSchema
   ) =>
-    setPreferences((prevState) => ({
+    setEmployeesPreferences((prevState) => ({
       ...prevState,
       [name]: {
         ...prevState[name],
@@ -61,11 +48,6 @@ const Preferences = () => {
 
   return (
     <Modal>
-      <PreferencesList
-        preferences={preferences}
-        updateChild={updateChild}
-        updateSubChild={updateSubChild}
-      />
       <Modal.Section>
         <Modal.Title>Selected company</Modal.Title>
         <S.Row>
@@ -89,7 +71,11 @@ const Preferences = () => {
             </S.Row>
           }
         >
-          Lorem ipsum dolor sit amet.
+          <PreferencesList
+            preferences={employeesPreferences}
+            updateChild={updateChild}
+            updateSubChild={updateSubChild}
+          />
         </Modal.Collapse>
         <Modal.Collapse
           header={
@@ -99,15 +85,38 @@ const Preferences = () => {
             </S.Row>
           }
         >
-          <Checkbox
-            label="Team"
-            isChecked={isChecked}
-            onChange={() => setIsChecked((prev) => !prev)}
+          <PreferencesList
+            preferences={companyPreferences}
+            updateChild={updateChild}
+            updateSubChild={updateSubChild}
           />
-          <Checkbox
-            label="Power"
-            isChecked={isChecked}
-            onChange={() => setIsChecked((prev) => !prev)}
+        </Modal.Collapse>
+        <Modal.Collapse
+          header={
+            <S.Row>
+              <Modal.Title>Company Performance</Modal.Title>
+              <Modal.Description>2 of 6 services selected</Modal.Description>
+            </S.Row>
+          }
+        >
+          <PreferencesList
+            preferences={performancePreferences}
+            updateChild={updateChild}
+            updateSubChild={updateSubChild}
+          />
+        </Modal.Collapse>
+        <Modal.Collapse
+          header={
+            <S.Row>
+              <Modal.Title>Workspaces Management</Modal.Title>
+              <Modal.Description>2 of 6 services selected</Modal.Description>
+            </S.Row>
+          }
+        >
+          <PreferencesList
+            preferences={workspacesPreferences}
+            updateChild={updateChild}
+            updateSubChild={updateSubChild}
           />
         </Modal.Collapse>
       </Modal.Section>
