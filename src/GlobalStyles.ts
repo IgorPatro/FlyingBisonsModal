@@ -1,8 +1,6 @@
 import { createGlobalStyle } from "styled-components"
 
 const GlobalStyles = createGlobalStyle`
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
   html {
     line-height: 1;
     text-size-adjust: 100%;
@@ -35,6 +33,7 @@ const GlobalStyles = createGlobalStyle`
   [type="submit"] {
     appearance: button;
     cursor: pointer;
+    font-family: 'Inter', sans-serif;
   }
 
   button::-moz-focus-inner,
