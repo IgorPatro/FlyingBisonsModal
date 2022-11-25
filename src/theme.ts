@@ -1,6 +1,10 @@
 const theme = {
   colors: {
-    white: "#ffffff",
+    background: "#D2D2D2",
+    white: "#FFFFFF",
+    text: "#0E171B",
+    green: "#2BB574",
+    blue: "#0878A1",
   },
   weights: {
     regular: 400,
