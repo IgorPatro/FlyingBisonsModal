@@ -10,5 +10,6 @@ export const ModalWrapper = styled.div`
   padding: 4rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 2.8rem;
+  border-radius: 1.2rem;
 `

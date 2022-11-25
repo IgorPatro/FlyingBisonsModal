@@ -1,16 +1,7 @@
-import React from "react"
-import Modal from "./components/common/Modal/Modal"
-import Button from "./components/common/Button/Button"
+import Preferences from "./components/Preferences/Preferences"
 
 const App = () => {
-  return (
-    <Modal>
-      <h1>Modal</h1>
-      <Modal.Section>
-        <Button preset="primary">Add preferences</Button>
-      </Modal.Section>
-    </Modal>
-  )
+  return <Preferences />
 }
 
 export default App
