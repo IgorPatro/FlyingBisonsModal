@@ -2,13 +2,70 @@ import * as React from "react"
 import Modal from "../common/Modal/Modal"
 import Button from "../common/Button/Button"
 import Checkbox from "../common/Checkbox/Checkbox"
+import PreferencesList, {
+  CheckboxSchema,
+} from "./PreferencesList/PreferencesList"
 import * as S from "./Preferences.styled"
+
+const preferencesTreeV2: Record<string, CheckboxSchema> = {
+  attention: {
+    isChecked: false,
+  },
+  satisfation: {
+    isChecked: false,
+  },
+  salary: {
+    isChecked: false,
+    children: {
+      b2b: {
+        isChecked: false,
+      },
+      b2c: {
+        isChecked: true,
+      },
+    },
+  },
+  location: {
+    isChecked: false,
+  },
+}
 
 const Preferences = () => {
   const [isChecked, setIsChecked] = React.useState(false)
+  const [preferences, setPreferences] = React.useState(preferencesTreeV2)
+
+  const updateChild = (name: string) =>
+    setPreferences((prevState) => ({
+      ...prevState,
+      [name]: {
+        ...prevState[name],
+        isChecked: !prevState[name].isChecked,
+      },
+    }))
+
+  const updateSubChild = (
+    name: string,
+    subChildName: string,
+    subChild: CheckboxSchema
+  ) =>
+    setPreferences((prevState) => ({
+      ...prevState,
+      [name]: {
+        ...prevState[name],
+        children: {
+          ...prevState[name].children,
+          [subChildName]: subChild,
+        },
+      },
+    }))
 
   return (
     <Modal>
+      <PreferencesList
+        preferences={preferences}
+        updateChild={updateChild}
+        updateSubChild={updateSubChild}
+      />
       <Modal.Section>
         <Modal.Title>Selected company</Modal.Title>
         <S.Row>
