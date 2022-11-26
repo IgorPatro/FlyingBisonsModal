@@ -4,47 +4,108 @@ import Button from "../common/Button/Button"
 import PreferencesList from "./PreferencesList/PreferencesList"
 import * as S from "./Preferences.styled"
 import {
-  employeesTree,
-  companyTree,
-  performanceTree,
-  workspacesTree,
-  type CheckboxSchema,
+  initialState,
+  type State,
+  type Preferences as IPreferences,
+  preferencesRenderer,
 } from "./Preferences.data"
 
+const toggleChild = (childName: string, prevState: IPreferences) => ({
+  ...prevState,
+  [childName]: {
+    ...prevState[childName],
+    isChecked: !prevState[childName].isChecked,
+  },
+})
+
+const toggleSubChild = (
+  childName: string,
+  subChildName: string,
+  prevState: IPreferences
+) => ({
+  ...prevState,
+  [childName]: {
+    ...prevState[childName],
+    children: toggleChild(subChildName, prevState[childName].children!),
+  },
+})
+
+interface ToggleChild {
+  type: "TOGGLE_CHILD"
+  payload: {
+    preferenceName: keyof State
+    childName: string
+  }
+}
+
+interface ToggleSubChild {
+  type: "TOGGLE_SUB_CHILD"
+  payload: {
+    preferenceName: keyof State
+    childName: string
+    subChildName: string
+  }
+}
+
+export type Action = ToggleChild | ToggleSubChild
+
+const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case "TOGGLE_CHILD": {
+      const { preferenceName, childName } = action.payload
+
+      return {
+        ...state,
+        [preferenceName]: toggleChild(childName, state[preferenceName]),
+      }
+    }
+    case "TOGGLE_SUB_CHILD": {
+      const { preferenceName, childName, subChildName } = action.payload
+
+      return {
+        ...state,
+        [preferenceName]: toggleSubChild(
+          childName,
+          subChildName,
+          state[preferenceName]
+        ),
+      }
+    }
+  }
+}
+
+const calculateChecked = (preferences: IPreferences): number => {
+  let count = 0
+
+  Object.values(preferences).forEach((child) => {
+    if (child.isChecked) {
+      count++
+    }
+
+    if (child.children) {
+      count += calculateChecked(child.children)
+    }
+  })
+
+  return count
+}
+
+const calculateTotalOptions = (preferences: IPreferences): number => {
+  let count = 0
+
+  Object.values(preferences).forEach((child) => {
+    count++
+
+    if (child.children) {
+      count += calculateTotalOptions(child.children)
+    }
+  })
+
+  return count
+}
+
 const Preferences = () => {
-  const [employeesPreferences, setEmployeesPreferences] =
-    React.useState(employeesTree)
-  const [companyPreferences, setCompanyPreferences] =
-    React.useState(companyTree)
-  const [performancePreferences, setPerformancePreferences] =
-    React.useState(performanceTree)
-  const [workspacesPreferences, setWorkspacesPreferences] =
-    React.useState(workspacesTree)
-
-  const updateChild = (name: string) =>
-    setEmployeesPreferences((prevState) => ({
-      ...prevState,
-      [name]: {
-        ...prevState[name],
-        isChecked: !prevState[name].isChecked,
-      },
-    }))
-
-  const updateSubChild = (
-    name: string,
-    subChildName: string,
-    subChild: CheckboxSchema
-  ) =>
-    setEmployeesPreferences((prevState) => ({
-      ...prevState,
-      [name]: {
-        ...prevState[name],
-        children: {
-          ...prevState[name].children,
-          [subChildName]: subChild,
-        },
-      },
-    }))
+  const [preferences, dispatch] = React.useReducer(reducer, initialState)
 
   return (
     <Modal>
@@ -63,62 +124,27 @@ const Preferences = () => {
         </Modal.Description>
       </Modal.Section>
       <Modal.Section>
-        <Modal.Collapse
-          header={
-            <S.Row>
-              <Modal.Title>Employees</Modal.Title>
-              <Modal.Description>1 of 9 services selected</Modal.Description>
-            </S.Row>
-          }
-        >
-          <PreferencesList
-            preferences={employeesPreferences}
-            updateChild={updateChild}
-            updateSubChild={updateSubChild}
-          />
-        </Modal.Collapse>
-        <Modal.Collapse
-          header={
-            <S.Row>
-              <Modal.Title>Company Management</Modal.Title>
-              <Modal.Description>2 of 6 services selected</Modal.Description>
-            </S.Row>
-          }
-        >
-          <PreferencesList
-            preferences={companyPreferences}
-            updateChild={updateChild}
-            updateSubChild={updateSubChild}
-          />
-        </Modal.Collapse>
-        <Modal.Collapse
-          header={
-            <S.Row>
-              <Modal.Title>Company Performance</Modal.Title>
-              <Modal.Description>2 of 6 services selected</Modal.Description>
-            </S.Row>
-          }
-        >
-          <PreferencesList
-            preferences={performancePreferences}
-            updateChild={updateChild}
-            updateSubChild={updateSubChild}
-          />
-        </Modal.Collapse>
-        <Modal.Collapse
-          header={
-            <S.Row>
-              <Modal.Title>Workspaces Management</Modal.Title>
-              <Modal.Description>2 of 6 services selected</Modal.Description>
-            </S.Row>
-          }
-        >
-          <PreferencesList
-            preferences={workspacesPreferences}
-            updateChild={updateChild}
-            updateSubChild={updateSubChild}
-          />
-        </Modal.Collapse>
+        {preferencesRenderer.map(({ name, preference }) => (
+          <Modal.Collapse
+            key={preference}
+            header={
+              <S.Row>
+                <Modal.Title>{name}</Modal.Title>
+                <Modal.Description>
+                  {calculateChecked(preferences[preference])} of{" "}
+                  {calculateTotalOptions(preferences[preference])} services
+                  selected
+                </Modal.Description>
+              </S.Row>
+            }
+          >
+            <PreferencesList
+              preferences={preferences[preference]}
+              preferenceName={preference}
+              dispatch={dispatch}
+            />
+          </Modal.Collapse>
+        ))}
       </Modal.Section>
       <Modal.Section>
         <Button preset="primary">Add preferences</Button>

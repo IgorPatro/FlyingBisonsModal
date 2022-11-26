@@ -1,9 +1,11 @@
+export type Preferences = Record<string, CheckboxSchema>
+
 export interface CheckboxSchema {
   isChecked: boolean
-  children?: Record<string, CheckboxSchema>
+  children?: Preferences
 }
 
-export const employeesTree: Record<string, CheckboxSchema> = {
+export const employeesTree: Preferences = {
   attention: {
     isChecked: false,
   },
@@ -29,7 +31,7 @@ export const employeesTree: Record<string, CheckboxSchema> = {
   },
 }
 
-export const companyTree: Record<string, CheckboxSchema> = {
+export const companyTree: Preferences = {
   negotiation: {
     isChecked: false,
     children: {
@@ -49,7 +51,7 @@ export const companyTree: Record<string, CheckboxSchema> = {
   },
 }
 
-export const performanceTree: Record<string, CheckboxSchema> = {
+export const performanceTree: Preferences = {
   foundation: {
     isChecked: false,
   },
@@ -58,8 +60,46 @@ export const performanceTree: Record<string, CheckboxSchema> = {
   },
 }
 
-export const workspacesTree: Record<string, CheckboxSchema> = {
+export const workspacesTree: Preferences = {
   apple: {
     isChecked: false,
   },
 }
+
+export interface State {
+  employees: Preferences
+  company: Preferences
+  performance: Preferences
+  workspaces: Preferences
+}
+
+export const initialState: State = {
+  employees: employeesTree,
+  company: companyTree,
+  performance: performanceTree,
+  workspaces: workspacesTree,
+}
+
+type PreferenceList = {
+  name: string
+  preference: keyof State
+}
+
+export const preferencesRenderer: PreferenceList[] = [
+  {
+    name: "Employees",
+    preference: "employees",
+  },
+  {
+    name: "Company",
+    preference: "company",
+  },
+  {
+    name: "Performance",
+    preference: "performance",
+  },
+  {
+    name: "Workspaces",
+    preference: "workspaces",
+  },
+]

@@ -1,32 +1,34 @@
 import React from "react"
 import Checkbox from "../../common/Checkbox/Checkbox"
-import { type CheckboxSchema } from "../Preferences.data"
+import { type Preferences } from "../Preferences.data"
 import * as S from "./PreferencesList.styled"
+import { type Action } from "../Preferences"
+import { type State } from "../Preferences.data"
 
 interface Props {
-  preferences: Record<string, CheckboxSchema>
-  updateChild: (name: string) => void
-  updateSubChild: (
-    name: string,
-    subChildName: string,
-    subChild: CheckboxSchema
-  ) => void
+  preferences: Preferences
+  preferenceName: keyof State
+  dispatch: (action: Action) => void
 }
 
-const PreferencesList = ({
-  preferences,
-  updateChild,
-  updateSubChild,
-}: Props) => {
+const PreferencesList = ({ preferences, preferenceName, dispatch }: Props) => {
   return (
     <S.PreferencesList>
-      {Object.entries(preferences).map(([name, child]) => {
+      {Object.entries(preferences).map(([childName, child]) => {
         return (
-          <S.PreferencesListItem key={name}>
+          <S.PreferencesListItem key={childName}>
             <Checkbox
-              label={name}
-              isChecked={preferences[name].isChecked}
-              onChange={() => updateChild(name)}
+              label={childName}
+              isChecked={preferences[childName].isChecked}
+              onChange={() =>
+                dispatch({
+                  type: "TOGGLE_CHILD",
+                  payload: {
+                    preferenceName,
+                    childName,
+                  },
+                })
+              }
             />
             {child.children && (
               <S.PreferencesList>
@@ -37,8 +39,13 @@ const PreferencesList = ({
                         label={subChildName}
                         isChecked={subChild.isChecked}
                         onChange={() =>
-                          updateSubChild(name, subChildName, {
-                            isChecked: !subChild.isChecked,
+                          dispatch({
+                            type: "TOGGLE_SUB_CHILD",
+                            payload: {
+                              preferenceName,
+                              childName,
+                              subChildName,
+                            },
                           })
                         }
                       />
