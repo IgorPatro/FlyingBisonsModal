@@ -4,50 +4,26 @@ import Button from "../common/Button/Button"
 import PreferencesList from "./PreferencesList/PreferencesList"
 import * as S from "./Preferences.styled"
 import {
-  initialState,
-  type State,
-  type Preferences as IPreferences,
-  preferencesRenderer,
+  employeesTree,
+  companyTree,
+  performanceTree,
+  workspacesTree,
+  preferencesRenderList,
 } from "./Preferences.data"
+import { type State, type Action } from "./Preferences.types"
+import {
+  calculateChecked,
+  calculateTotalOptions,
+  toggleChild,
+  toggleSubChild,
+} from "./Preferences.utils"
 
-const toggleChild = (childName: string, prevState: IPreferences) => ({
-  ...prevState,
-  [childName]: {
-    ...prevState[childName],
-    isChecked: !prevState[childName].isChecked,
-  },
-})
-
-const toggleSubChild = (
-  childName: string,
-  subChildName: string,
-  prevState: IPreferences
-) => ({
-  ...prevState,
-  [childName]: {
-    ...prevState[childName],
-    children: toggleChild(subChildName, prevState[childName].children!),
-  },
-})
-
-interface ToggleChild {
-  type: "TOGGLE_CHILD"
-  payload: {
-    preferenceName: keyof State
-    childName: string
-  }
+export const initialState: State = {
+  employees: employeesTree,
+  company: companyTree,
+  performance: performanceTree,
+  workspaces: workspacesTree,
 }
-
-interface ToggleSubChild {
-  type: "TOGGLE_SUB_CHILD"
-  payload: {
-    preferenceName: keyof State
-    childName: string
-    subChildName: string
-  }
-}
-
-export type Action = ToggleChild | ToggleSubChild
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -74,36 +50,6 @@ const reducer = (state: State, action: Action): State => {
   }
 }
 
-const calculateChecked = (preferences: IPreferences): number => {
-  let count = 0
-
-  Object.values(preferences).forEach((child) => {
-    if (child.isChecked) {
-      count++
-    }
-
-    if (child.children) {
-      count += calculateChecked(child.children)
-    }
-  })
-
-  return count
-}
-
-const calculateTotalOptions = (preferences: IPreferences): number => {
-  let count = 0
-
-  Object.values(preferences).forEach((child) => {
-    count++
-
-    if (child.children) {
-      count += calculateTotalOptions(child.children)
-    }
-  })
-
-  return count
-}
-
 const Preferences = () => {
   const [preferences, dispatch] = React.useReducer(reducer, initialState)
 
@@ -124,7 +70,7 @@ const Preferences = () => {
         </Modal.Description>
       </Modal.Section>
       <Modal.Section>
-        {preferencesRenderer.map(({ name, preference }) => (
+        {preferencesRenderList.map(({ name, preference }) => (
           <Modal.Collapse
             key={preference}
             header={

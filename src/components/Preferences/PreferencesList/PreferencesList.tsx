@@ -1,10 +1,6 @@
-import React from "react"
 import Checkbox from "../../common/Checkbox/Checkbox"
-import { type Preferences } from "../Preferences.data"
+import { type Preferences, type State, type Action } from "../Preferences.types"
 import * as S from "./PreferencesList.styled"
-import { type Action } from "../Preferences"
-import { type State } from "../Preferences.data"
-
 interface Props {
   preferences: Preferences
   preferenceName: keyof State

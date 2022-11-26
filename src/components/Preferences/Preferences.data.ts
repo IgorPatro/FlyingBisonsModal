@@ -1,9 +1,4 @@
-export type Preferences = Record<string, CheckboxSchema>
-
-export interface CheckboxSchema {
-  isChecked: boolean
-  children?: Preferences
-}
+import { type Preferences, type State } from "./Preferences.types"
 
 export const employeesTree: Preferences = {
   attention: {
@@ -66,26 +61,12 @@ export const workspacesTree: Preferences = {
   },
 }
 
-export interface State {
-  employees: Preferences
-  company: Preferences
-  performance: Preferences
-  workspaces: Preferences
-}
-
-export const initialState: State = {
-  employees: employeesTree,
-  company: companyTree,
-  performance: performanceTree,
-  workspaces: workspacesTree,
-}
-
-type PreferenceList = {
+type PreferencesList = {
   name: string
   preference: keyof State
 }
 
-export const preferencesRenderer: PreferenceList[] = [
+export const preferencesRenderList: PreferencesList[] = [
   {
     name: "Employees",
     preference: "employees",
